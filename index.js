@@ -5,7 +5,7 @@ const connectDB = require('./config/database');
 const userRoutes = require('./routes/users');
 const RedactionThemeRoutes = require('./routes/redactionThemeRoutes');
 const PotencialThemeRoutes = require('./routes/potencialThemeRoutes');
-const aiEssayRoutes = require('./routes/aiEssayRoutes');
+const aiEssayRoutes = require('./routes/aiEssayRoutes.js');
 
 dotenv.config();
 const app = express();

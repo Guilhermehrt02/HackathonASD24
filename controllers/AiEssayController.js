@@ -1,4 +1,3 @@
-const axios = require('axios');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const createAiEssay = async (req, res) => {
@@ -8,20 +7,37 @@ const createAiEssay = async (req, res) => {
         if (!req.body.prompt) {
             return res.status(400).json({ message: "Prompt is required." });
         }
-        console.log(req.body.prompt);
         
-        const { prompt } = `Retorne (apenas em JSON, com um ID para cada) 3 repertórios históricos, culturais e/ou sociais, 
-                            de 3 teses(linhas de pensamento) que podem ser utilizados em uma redação sobre ${req.body.prompt}, 
-                            incluindo exemplos de autores, movimentos e leis. Mostre a partir de uma lista, com descrição, 
-                            uma explicação breve de cada, com sem dicas, comentários ou observações da IA. 
-                            Com mais uma categoria chamada "Estudos complementares", 
-                            com recomendações de estudos que auxiliariam o aluno sobre o mesmo tema. Sempre no formato JSON.`;
+        const prompt = ` 3 repertórios  ${req.body.prompt}`;
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({model:"gemini-1.5-flash", 
+            generationConfig: {
+                "temperature": 0,
+                "top_p": 1,
+                "top_k": 1,
+                "max_output_tokens": 400
+            }, 
+            safetySettings: [
+            {
+                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_HATE_SPEECH",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_HARASSMENT",
+                "threshold": "BLOCK_NONE"
+            },
+            {
+                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "threshold": "BLOCK_NONE"
+            } ]});
 
         const result = await model.generateContent(prompt);
-        console.log(result.response.text());
+        
         res.status(200).json(result.response.text());
     } catch (error) {
         console.error("Error generating AI essay:", error.message);
