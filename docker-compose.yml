@@ -1,0 +1,13 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo-container
+    ports:
+      - "27017:27017" # Porta padrão do MongoDB
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root # Usuário admin
+      MONGO_INITDB_ROOT_PASSWORD: password # Senha admin
+    volumes:
+      - ./volumes/mongoDB:/data/db 
+
+
