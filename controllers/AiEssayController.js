@@ -10,75 +10,12 @@ const createAiEssay = async (req, res) => {
         }
         console.log(req.body.prompt);
         
-        const { prompt } = `Retorne (apenas em JSON, com um ID para cada) 3 repertórios históricos, culturais e/ou sociais, de 3 teses(linhas de pensamento) que podem ser utilizados em uma redação sobre ${req.body.prompt}, incluindo exemplos de autores, movimentos e leis. Mostre a partir de uma lista, com descrição, uma explicação breve de cada, com  sem dicas, comentários ou observações da IA. Com mais uma categoria chamada "Estudos complementares", com recomendações de estudos que auxiliariam o aluno sobre o mesmo tema. Sempre no seguinte formato:
-                            "teses": [{
-                                        "tese": "X",
-                                        "repertorios": [
-                                            {
-                                                "tipo": "histórico",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            },
-                                            {
-                                                "tipo": "cultural",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            },
-                                            {
-                                                "tipo": "social",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "tese": "",
-                                        "repertorios": [
-                                            {
-                                                "tipo": "histórico",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            },
-                                            {
-                                                "tipo": "social",
-                                                "descrição": "",
-                                                "exemplos": [""]
-                                            },
-                                            {
-                                                "tipo": "cultural",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "tese": "",
-                                        "repertorios": [
-                                            {
-                                                "tipo": "",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            },
-                                            {
-                                                "tipo": "social",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            },
-                                            {
-                                                "tipo": "",
-                                                "descricao": "",
-                                                "exemplos": [""]
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "estudosComplementares": [
-                                    "",
-                                    "",
-                                    "",
-                                    ""
-                                ]
-                            }`;
+        const { prompt } = `Retorne (apenas em JSON, com um ID para cada) 3 repertórios históricos, culturais e/ou sociais, 
+                            de 3 teses(linhas de pensamento) que podem ser utilizados em uma redação sobre ${req.body.prompt}, 
+                            incluindo exemplos de autores, movimentos e leis. Mostre a partir de uma lista, com descrição, 
+                            uma explicação breve de cada, com sem dicas, comentários ou observações da IA. 
+                            Com mais uma categoria chamada "Estudos complementares", 
+                            com recomendações de estudos que auxiliariam o aluno sobre o mesmo tema. Sempre no formato JSON.`;
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
