@@ -1,0 +1,73 @@
+const axios = require('axios');
+const cheerio = require('cheerio');
+
+(async () => {
+    const baseUrl = 'https://www.imaginie.com.br/temas-de-redacao/';
+    let currentPage = 1;
+    const temas = [];
+
+    while (true) {
+        try {
+            console.log(`Buscando temas na página ${currentPage}...`);
+            
+            // Faz a requisição HTTP para a página atual
+            const { data } = await axios.get(`${baseUrl}${currentPage === 1 ? '' : currentPage + '/'}`);
+            
+            // Carrega o HTML no Cheerio
+            const $ = cheerio.load(data);
+            
+            // Captura os temas da página atual
+            const temasPagina = [];
+            $('.elementor-heading-title.elementor-size-medium').each((index, element) => {
+                const title = $(element).text().trim(); // Nome do tema
+                const id = `imaginie_${new Date().getFullYear()}_${new Date().getMonth()+1}_${new Date().getDate()}`; // ID dinâmico
+                const exam = 'ENEM'; // Exame
+                const year = new Date().getFullYear(); // Ano
+                const mainSubject = $(element).next('.mainSubject').text().trim(); // Main subject extraído dinamicamente
+                const secondarySubject = $(element).next('.secondarySubject').text().trim(); // Secondary subject extraído dinamicamente
+
+                const themeData = {
+                    id,
+                    title,
+                    exam,
+                    year,
+                    mainSubject,
+                    secondarySubject,
+                    keywords: [], // Inicializa como vazio
+                    texts: [] // Inicializa como vazio
+                };
+
+                // Adiciona o tema extraído ao array
+                temasPagina.push(themeData);
+            });
+
+            // Se não encontrar novos temas, encerra o loop
+            if (temasPagina.length === 0) {
+                console.log('Não há mais páginas para processar.');
+                break;
+            }
+
+            // Adiciona os temas da página atual à lista geral
+            temas.push(...temasPagina);
+            console.log(`Página ${currentPage} processada: ${temasPagina.length} temas encontrados.`);
+            
+            // Avança para a próxima página
+            currentPage++;
+        } catch (error) {
+            console.error(`Erro ao acessar a página ${currentPage}:`, error.message);
+            break;
+        }
+    }
+
+    // Agora, vamos enviar os temas para a API que salvará no MongoDB
+    await sendToApi(temas);
+})();
+
+async function sendToApi(temas) {
+    try {
+        const response = await axios.post('http://localhost:5000/redaction-themes', temas);
+        console.log('Temas enviados para a API e salvos no banco:', response.data);
+    } catch (error) {
+        console.error('Erro ao salvar temas no banco:', error.message);
+    }
+}
